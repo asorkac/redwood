@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Redwood Height Questions</title>
+<style>
+  :root {
+    --bg: #f6f5f1;
+    --card: #ffffff;
+    --text: #1f2421;
+    --muted: #6a716c;
+    --accent: #2f6f5e;
+    --accent-text: #ffffff;
+    --border: #d9d7cf;
+    --error: #b3261e;
+    --banner-bg: #fff4d6;
+    --banner-text: #6b5300;
+    color-scheme: light;
+    box-sizing: border-box;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #151816; --card: #1f2321; --text: #ecefec; --muted: #9aa39d;
+      --accent: #6fc2aa; --accent-text: #0f1a16; --border: #3a413d;
+      --error: #f2b8b5; --banner-bg: #3a3010; --banner-text: #f3dd94;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    padding: 24px 16px;
+    padding-top: max(24px, env(safe-area-inset-top, 0px));
+    padding-bottom: max(24px, env(safe-area-inset-bottom, 0px));
+  }
+  main { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: clamp(24px, 5vw, 32px); margin: 0 0 6px; }
+  .sub { color: var(--muted); margin: 0 0 22px; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 14px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 22px;
+    margin-bottom: 16px;
+  }
+  fieldset { border: 0; padding: 0; margin: 0; }
+  legend, .qlabel {
+    font-size: 19px;
+    line-height: 1.4;
+    font-weight: 600;
+    margin-bottom: 14px;
+    padding: 0;
+    display: block;
+  }
+  .qnum {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); display: block; margin-bottom: 6px; font-weight: 500;
+  }
+  .options { display: flex; gap: 12px; flex-wrap: wrap; }
+  .options label {
+    flex: 1 1 140px;
+    display: flex; align-items: center; gap: 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    font-size: 17px;
+  }
+  .options label:has(input:checked) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+  .options label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+  input[type="radio"] { accent-color: var(--accent); width: 18px; height: 18px; margin: 0; }
+  .numrow { display: flex; align-items: center; gap: 10px; }
+  input[type="number"] {
+    width: 180px; max-width: 100%;
+    font: inherit; font-size: 18px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    background: transparent; color: var(--text);
+  }
+  input[type="number"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .unit { color: var(--muted); font-size: 17px; }
+  button {
+    font: inherit; font-size: 17px; font-weight: 600;
+    background: var(--accent); color: var(--accent-text);
+    border: 0; border-radius: 12px;
+    padding: 14px 26px; cursor: pointer;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .error { color: var(--error); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 14px; margin: 0 0 12px; min-height: 1.2em; }
+  .banner {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--banner-bg); color: var(--banner-text);
+    font-size: 13px; padding: 10px 14px; border-radius: 10px; margin-bottom: 16px;
+  }
+  .banner a { color: inherit; font-weight: 600; margin-left: 8px; }
+  .done h2 { margin: 0 0 10px; font-size: 22px; }
+  .done p { margin: 6px 0; font-size: 17px; line-height: 1.5; }
+  .done .meta { color: var(--muted); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 14px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <div class="banner" id="banner" hidden></div>
+  <h1>Redwood Height Questions</h1>
+  <p class="sub">Please answer both questions, then press Submit.</p>
+
+  <form id="form" novalidate>
+    <div class="card">
+      <fieldset>
+        <legend><span class="qnum">Question 1</span><span id="q1text"></span></legend>
+        <div class="options">
+          <label><input type="radio" name="q1" value="more"> More</label>
+          <label><input type="radio" name="q1" value="less"> Less</label>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="card">
+      <label class="qlabel" for="q2"><span class="qnum">Question 2</span>What is your best guess about the height of the tallest redwood tree?</label>
+      <div class="numrow">
+        <input type="number" id="q2" name="q2" inputmode="decimal" min="0" step="any" autocomplete="off">
+        <span class="unit">feet</span>
+      </div>
+    </div>
+
+    <p class="error" id="error" role="alert"></p>
+    <button type="submit" id="submit">Submit</button>
+  </form>
+
+  <section class="card done" id="done" hidden>
+    <h2 id="doneTitle">Thank you!</h2>
+    <p id="doneBody"></p>
+    <p class="meta" id="doneMeta"></p>
+  </section>
+</main>
+
+<script>
+  // ═════════════ SETTINGS (edit here) ═════════════
+  const ANCHORS = { "1": 1200, "2": 180 };   // feet shown to Group 1 and Group 2
+
+  // Optional: paste a URL here to have answers sent somewhere (e.g. a Google
+  // Apps Script web app or a Formspree endpoint). Leave as "" to skip sending;
+  // students will then see their group and answers on screen to show you.
+  const SUBMIT_URL = "https://script.google.com/macros/s/AKfycbxSZA7QAgLxlSnzf_r8ITaycnIwOOZSszOAjp51-l92eX3qzluEgEtJ_AjxT22Kf30osA/exec";
+  // ═════════════════════════════════════════════════
+
+  const KEY_GROUP = "redwood-group";
+  const KEY_DONE = "redwood-submission";
+
+  const $ = (id) => document.getElementById(id);
+  const form = $("form");
+  const banner = $("banner");
+
+  function randomGroup() {
+    const buf = new Uint8Array(1);
+    crypto.getRandomValues(buf);
+    return (buf[0] & 1) === 0 ? "1" : "2";
+  }
+
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  // Teacher preview: add #1 or #2 to the link to see each version
+  const hash = location.hash.replace("#", "");
+  const preview = hash === "1" || hash === "2";
+
+  let group;
+  if (preview) {
+    group = hash;
+    banner.hidden = false;
+    banner.textContent = "Teacher preview of Group " + group + ". Submissions are turned off.";
+    const a = document.createElement("a");
+    a.href = location.pathname + location.search;
+    a.textContent = "Exit preview";
+    a.addEventListener("click", () => setTimeout(() => location.reload(), 0));
+    banner.appendChild(a);
+    $("submit").disabled = true;
+  } else {
+    group = lsGet(KEY_GROUP);
+    if (group !== "1" && group !== "2") {
+      group = randomGroup();
+      lsSet(KEY_GROUP, group);
+    }
+  }
+
+  const anchor = ANCHORS[group];
+  $("q1text").textContent = "Is the height of the tallest redwood tree more or less than " + anchor.toLocaleString("en-US") + " ft?";
+
+  function showDone(sub, sent) {
+    form.hidden = true;
+    document.querySelector(".sub").hidden = true;
+    $("done").hidden = false;
+    if (sent) {
+      $("doneTitle").textContent = "Thank you! Your answers were submitted.";
+    } else {
+      $("doneTitle").textContent = "Thank you! Here is your record.";
+    }
+    $("doneBody").textContent =
+      "Question 1: " + sub.q1 + " than " + sub.anchor.toLocaleString("en-US") + " ft. " +
+      "Question 2: " + sub.q2 + " ft.";
+    $("doneMeta").textContent = "Group " + sub.group + (sent ? "" : " \u2022 Please show this screen to your teacher.");
+  }
+
+  const saved = preview ? null : lsGet(KEY_DONE);
+  if (saved) {
+    try { const s = JSON.parse(saved); showDone(s, !!s.sent); } catch (e) {}
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (preview) return;
+    const err = $("error");
+    err.textContent = "";
+
+    const q1 = (form.querySelector('input[name="q1"]:checked') || {}).value;
+    const raw = $("q2").value.trim();
+    const q2 = Number(raw);
+
+    if (!q1) { err.textContent = "Please choose More or Less for Question 1."; return; }
+    if (raw === "" || !isFinite(q2) || q2 < 0) { err.textContent = "Please enter a number of feet for Question 2."; return; }
+
+    const sub = { group: group, anchor: anchor, q1: q1, q2: q2, time: new Date().toISOString(), sent: false };
+
+    if (SUBMIT_URL) {
+      $("submit").disabled = true;
+      $("submit").textContent = "Sending\u2026";
+      try {
+        // text/plain avoids a CORS preflight, which Google Apps Script requires
+        await fetch(SUBMIT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(sub)
+        });
+        sub.sent = true;
+      } catch (ex) {
+        err.textContent = "Could not send your answers. Check your connection and try again.";
+        $("submit").disabled = false;
+        $("submit").textContent = "Submit";
+        return;
+      }
+    }
+
+    lsSet(KEY_DONE, JSON.stringify(sub));
+    showDone(sub, sub.sent);
+  });
+</script>
+</body>
+</html>
